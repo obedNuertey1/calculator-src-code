@@ -25,8 +25,7 @@ class Main extends React.Component {
 			isDecimalTyped: true,
 			isZeroTyped: true,
 			total: "",
-			getRidOfafterVal: false,
-			lastPlusMinus: false
+			getRidOfafterVal: false
 		};
 		this.clear = this.clear.bind(this);
 		this.numberFunc = this.numberFunc.bind(this);
@@ -51,11 +50,10 @@ class Main extends React.Component {
 		this.numberWorks = this.numberWorks.bind(this);
 		this.overrideLargeTextError = this.overrideLargeTextError.bind(this);
 		this.overridePlusMinus = this.overridePlusMinus.bind(this);
-		this.clearExcessNum = this.clearExcessNum.bind(this);
 	}
 
-	overridePlusMinus(){
-		this.setState({isEqualsTyped: false});
+	overridePlusMinus(val){
+		this.setState({largeText: val, isEqualsTyped: false});
 		//if(this.state.isEqualsTyped === true){
 		//}
 	}
@@ -71,6 +69,8 @@ class Main extends React.Component {
 		const strictlyZeroRegex = /0/gi;
 		if(zeroRegex.test(this.state.smallText)){
 			this.state.smallTextArr.pop();
+			console.log("first if statement of "+n);
+			console.log(this.state.smallTextArr);
 			this.numberFunc(n);
 		}else if(this.state.smallText.length === 1 && strictlyZeroRegex.test(this.state.smallText)){
 			this.state.smallTextArr.pop();
@@ -90,10 +90,12 @@ class Main extends React.Component {
 			if(o === "/"){
 				this.state.smallTextArr.pop();
 				this.numberFunc(o);
+				console.log("/ was typed");
 				this.setState({isDecimalTyped: true});
 			}else if(o === "*"){
 				this.state.smallTextArr.pop();
 				this.numberFunc(o);
+				console.log("/ was typed");
 				this.setState({isDecimalTyped: true});
 			}else if(o === "=" && (this.state.smallText !== "/" && this.state.smallText !== "*")){
 				if(this.state.isNumberTyped === true){
@@ -114,16 +116,13 @@ class Main extends React.Component {
 			this.state.smallTextArr.push(n);
 			const operationRegex = /[\*\/\+\-]/gi;
 			if(operationRegex.test(n)){
-				console.log("116 executed = " + n);
 				this.state.smallTextArr.unshift(this.state.total);
 				this.setState(state => {
 					if(n==="*"){
-						console.log("120 executed");
 						return {largeText: "x", smallText: state.smallTextArr.join(""), operation: false,
 						isNumberTyped: true,
 						isEqualsTyped: true, total: ""}
 					}else{
-						console.log("125 executed = " + n);
 						return {largeText: n, smallText: state.smallTextArr.join(""), operation: false,
 						isNumberTyped: true,
 						isEqualsTyped: true, total: ""}
@@ -132,7 +131,6 @@ class Main extends React.Component {
 			}else{
 				this.setState(state => {
 					if(n==="*"){
-						console.log("134 executed");
 						return {
 							largeText: "x",
 							smallText: state.smallTextArr.join(""),
@@ -142,7 +140,6 @@ class Main extends React.Component {
 							total: ""
 						};
 					}else{
-						console.log("144 executed");
 						return {
 							largeText: n,
 							smallText: state.smallTextArr.join(""),
@@ -164,6 +161,7 @@ class Main extends React.Component {
 		if(this.state.largeText.length < 20){
 			if(this.state.largeText === "0"){
 				this.state.smallTextArr.push(n);
+				//this.setState(state => ({largeText: n, smallText: state.smallTextArr.join(""), isNumberTyped: true}));
 				this.setState(state => {
 					if(n==="*"){
 						return {largeText: "x", smallText: state.smallTextArr.join(""), isNumberTyped: true}
@@ -177,6 +175,7 @@ class Main extends React.Component {
 					this.setState({largeText: "", operation: false, isNumberTyped: true});
 				}
 				this.state.smallTextArr.push(n);
+				//this.setState(state => ({smallText: state.smallTextArr.join(""), largeText: state.largeText.concat(n)}));
 				this.setState(state => {
 					if(n==="*"){
 						return {smallText: state.smallTextArr.join(""), largeText: state.largeText.concat("x")}
@@ -187,28 +186,23 @@ class Main extends React.Component {
 			}
 		}else if(this.state.largeText.length >= 20){
 			setTimeout(()=>{
-				$('#display').text("DIGIT LIMIT MET");
+				$('#large-text').text("DIGIT LIMIT MET");
 				setTimeout(()=>{
-					$('#display').text(this.state.largeText);
+					$('#large-text').text(this.state.largeText);
 				}, 1000);
 			}, 0);
 		}
-		console.log("195 executed = " + n);
-		const lastRegex = /[\+\-]/ig;
-		if(this.state.lastPlusMinus === true && lastRegex.test(n)){
-			this.setState({largeText: n, lastPlusMinus: false});
+	}
+		divide(){
+		const operationRegex = /[\/\+\-\*]/ig;
+		if(this.state.smallText.length === 1 && operationRegex.test(this.state.smallText)){
+			this.state.smallTextArr.pop();
+			this.typedOperation("/");
+		}else{
+			this.typedOperation("/");
+			this.overrideLargeTextError("/");
 		}
 	}
-	divide(){
-	const operationRegex = /[\/\+\-\*]/ig;
-	if(this.state.smallText.length === 1 && operationRegex.test(this.state.smallText)){
-		this.state.smallTextArr.pop();
-		this.typedOperation("/");
-	}else{
-		this.typedOperation("/");
-		this.overrideLargeTextError("/");
-	}
-}
 	multiply(){  
 		const operationRegex = /[\/\+\-\*]/ig;
 		if(this.state.smallText.length === 1 && operationRegex.test(this.state.smallText)){
@@ -243,7 +237,7 @@ class Main extends React.Component {
 			this.setState({
 				isDecimalTyped: true
 			});
-			this.overridePlusMinus();
+			this.overridePlusMinus("-");
 		}
 	}
 	add(){  
@@ -282,9 +276,9 @@ class Main extends React.Component {
 		}else if(this.state.isEqualsTyped === true){
 			this.numberFunc("+");
 			this.setState({
-				isDecimalTyped: true
+				//isDecimalTyped: true,
 			});
-			this.overridePlusMinus();
+			this.overridePlusMinus("+");
 		}
 	}
 	equals(){
@@ -296,26 +290,8 @@ class Main extends React.Component {
 			largeText: results,
 			isEqualsTyped: true,
 			isDecimalTyped: true,
-			total: results,
-			getRidOfafterVal: true,
-			lastPlusMinus: true
-
+			total: results
 		}));  
-	}
-	clearExcessNum(){
-		if(this.state.getRidOfafterVal === true){
-			let modified = this.state.smallText.split("");
-			modified.pop();
-			let newModified = modified.join("");
-			const regex = /([\+\-]\d\d)$/gi;
-			if(regex.test(this.state.smallText)){
-				this.setState({
-						smallTextArr: modified,
-						getRidOfafterVal: false,
-						smallText: newModified
-				});
-			}
-		}
 	}
 	one() {
 		this.numberWorks("1");
@@ -348,27 +324,25 @@ class Main extends React.Component {
 		this.numberWorks("0");
 	}
 	decimal() {
-    if(this.state.isEqualsTyped === false){
-      let myOperations = ['/', '*', '-', '+'];
-      let myNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-      if(this.state.isDecimalTyped === true){
-        if(myOperations.includes(this.state.smallText[this.state.smallText.length - 1]) || this.state.smallText === ""){
-          this.state.smallTextArr.push("0.");
-          this.setState(state => ({
-            smallText: state.smallTextArr.join(""),
-            largeText: "0.",
-            isDecimalTyped: false
-          }));
-        }else if(myNumbers.includes(this.state.smallText[this.state.smallText.length - 1])){
-          this.state.smallTextArr.push(".");
-          this.setState(state => ({
-            smallText: state.smallTextArr.join(''),
-            largeText: state.largeText.concat('.'),
-            isDecimalTyped: false
-          }));
-        }
-      }
-    }
+		let myOperations = ['/', '*', '-', '+'];
+		let myNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+		if(this.state.isDecimalTyped === true){
+			if(myOperations.includes(this.state.smallText[this.state.smallText.length - 1]) || this.state.smallText === ""){
+				this.state.smallTextArr.push("0.");
+				this.setState(state => ({
+					smallText: state.smallTextArr.join(""),
+					largeText: "0.",
+					isDecimalTyped: false
+				}));
+			}else if(myNumbers.includes(this.state.smallText[this.state.smallText.length - 1])){
+				this.state.smallTextArr.push(".");
+				this.setState(state => ({
+					smallText: state.smallTextArr.join(''),
+					largeText: state.largeText.concat('.'),
+					isDecimalTyped: false
+				}));
+			}
+		}
 	}
 	clear() {
 		this.setState({
@@ -379,9 +353,7 @@ class Main extends React.Component {
 			isNumberTyped: false,
 			isEqualsTyped: false,
 			isDecimalTyped: true,
-			isZeroTyped: true,
-			getRidOfafterVal: false
-
+			isZeroTyped: true
 		});
 	}
 	componentDidMount() {
@@ -389,20 +361,19 @@ class Main extends React.Component {
 	}
 
 	render() {
-		this.clearExcessNum();
 		return (
 			<div className="calculator-container">
 				<div className="calculator">
-					<div className="calculator-components">
-						<div className="myDisplay">
-							{/*<div className='first-div'>*/}
-								<p className='screen-text small-text-p first-div'><span className="small-text">{this.state.smallText}</span></p>
-							{/*</div>*/}
-							{/*<div>*/}
-								<p className='screen-text large-text-p'><span className='smallDisplay' id="display">{this.state.largeText}</span></p>
-							{/*</div>*/}
+					<div id="calculator-components">
+						<div id="myDisplay">
+							<div id='first-div'>
+								<p  id='small-text-p' className='screen-text'><span id="small-text">{this.state.smallText}</span></p>
+							</div>
+							<div>
+								<p id='large-text-p' className='screen-text'><span id="display">{this.state.largeText}</span></p>
+							</div>
 						</div>
-						<div className="buttons">
+						<div id="buttons">
 							<button id="clear" onClick={this.clear}>AC</button>
 							<button id="divide" onClick={this.divide} className='operation'>/</button>
 							<button id="multiply" onClick={this.multiply} className='operation'>X</button>
@@ -428,4 +399,3 @@ class Main extends React.Component {
 	}
 };
 
-export default Main;
