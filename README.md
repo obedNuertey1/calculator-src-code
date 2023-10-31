@@ -1,6 +1,17 @@
-# Getting Started with Create React App
+# Calculator App Project - Documentation
+### Overview:
+- [Introduction](#introduction)
+- [Available Scripts](#available-scripts)
+- [Learn More](#learn-more)
+- [Visit Site](https://obn-calculator.netlify.app/)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Introduction
+* This is an application created with react, redux, jquery, and sass.
+* You can sum, subtract, multiply and divide.
+* I recommend visiting the [site](https://obn-calculator.netlify.app/) to see it for yourself.
+
+![image](https://github.com/obedNuertey1/calculator-src-code/assets/101027384/ec5853ad-caeb-4933-ad0d-a24f2278e276)
+
 
 ## Available Scripts
 
